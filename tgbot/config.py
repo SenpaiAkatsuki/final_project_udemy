@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from itertools import product
+from tgbot.misc.db_api.postgres_db import Database as db
 
 from environs import Env
 
@@ -16,11 +18,25 @@ class TgBot:
     token: str
     admin_ids: list[int]
     use_redis: bool
+    supports: list[int]
+
+
+@dataclass
+class Channel:
+    channel_id: list[int]
+
+
+@dataclass
+class Products:
+    product_list: list[int]
 
 
 @dataclass
 class Miscellaneous:
     other_params: str = None
+    allowed_users: list = None
+    secret_code: str = None
+    mono_token: str = None
 
 
 @dataclass
@@ -28,6 +44,8 @@ class Config:
     tg_bot: TgBot
     db: DbConfig
     misc: Miscellaneous
+    channel: Channel
+    product: Products
 
 
 def load_config(path: str = None):
@@ -39,12 +57,23 @@ def load_config(path: str = None):
             token=env.str("BOT_TOKEN"),
             admin_ids=list(map(int, env.list("ADMINS"))),
             use_redis=env.bool("USE_REDIS"),
+            supports=env.list("SUPPORTS")
         ),
         db=DbConfig(
             host=env.str('DB_HOST'),
-            password=env.str('DB_PASS'),
+            password=env.str('PG_PASSWORD'),
             user=env.str('DB_USER'),
             database=env.str('DB_NAME')
         ),
-        misc=Miscellaneous()
+        misc=Miscellaneous(
+            allowed_users=[],
+            secret_code=env.str('SECRET_CODE'),
+            mono_token=env.str('MONO_TOKEN')
+        ),
+        channel=Channel(
+            channel_id=env.list("CHANNELS")
+        ),
+        product=Products(
+            product_list=[]
+        )
     )
