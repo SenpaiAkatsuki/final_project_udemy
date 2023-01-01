@@ -93,11 +93,11 @@ async def main():
                                database=config.db.database)
     await db.create_table_users()
     await db.create_table()
-    await db.close()
 
     try:
         await dp.start_polling()
     finally:
+        await db.close()
         await dp.storage.close()
         await dp.storage.wait_closed()
         await bot.session.close()
