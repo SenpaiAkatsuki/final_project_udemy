@@ -10,12 +10,13 @@ class AdminMenu(StatesGroup):
     adminMenu = State()
 
 
-class Code_check(StatesGroup):
+class Codecheck(StatesGroup):
     Q1 = State()
 
 
 class PurchaseMono(StatesGroup):
     checkPayment = State()
+    monoComplete = State()
 
 
 class Purchase(StatesGroup):
@@ -26,10 +27,7 @@ class Purchase(StatesGroup):
 
 class RedactProduct(StatesGroup):
     changeRedaction = State()
-    getNewName = State()
-    getNewDescription = State()
-    getNewPrice = State()
-    getNewPhoto = State()
+    changeValue = State()
 
 
 class CreateProduct(StatesGroup):

@@ -2,15 +2,13 @@ from aiogram import Dispatcher
 from aiogram.types import CallbackQuery
 
 from tgbot.handlers.admin_menu.feedback_recive import Feedback
-from tgbot.keyboards.admin_inline import admin_main_menu
 from tgbot.keyboards.feedback_inilne import feedback_inline, feedback_callback
-from tgbot.keyboards.main_menu_inline import menu_button_callback, main_menu_keyboard
+from tgbot.keyboards.main_menu_inline import menu_button_callback, main_menu_keyboard, admin_menu_keyboard
 from tgbot.misc.states import User, AdminMenu
 
 
 async def feedback_menu(call: CallbackQuery):
     await call.answer()
-    config = call.bot.get('config')
     await call.message.edit_text(f"<b>F.A.Q</b>\n\n"
                                  f"1. Что означает 💰?\n"
                                  f"<b>Один 💰 равен 1 UAH</b>\n"
@@ -23,14 +21,17 @@ async def feedback_menu(call: CallbackQuery):
 
 async def cancel_feedback(call: CallbackQuery):
     config = call.bot.get('config')
+
+    await call.message.delete_reply_markup()
     if call.from_user.id in config.tg_bot.admin_ids:
-        await call.message.edit_text(f"Главное меню📀\n\n"
-                                     f"<i>режим администратора</i>",
-                                     reply_markup=admin_main_menu)
+        await call.message.answer(f"Главное меню📀\n\n"
+                                  f"<i>режим администратора</i>",
+                                  reply_markup=admin_menu_keyboard)
         await AdminMenu.adminMenu.set()
     else:
-        await call.message.edit_text(f"Главное меню📀\n\n",
-                                     reply_markup=main_menu_keyboard)
+        await call.message.answer(f"Главное меню📀\n\n"
+                                  f"<b>Отмена отправки сообщения❌</b>",
+                                  reply_markup=main_menu_keyboard)
 
         await User.mainMenu.set()
 

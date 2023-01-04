@@ -2,11 +2,9 @@ from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 
-from tgbot.keyboards.admin_inline import admin_main_menu
-from tgbot.keyboards.main_menu_inline import main_menu_keyboard
+from tgbot.keyboards.main_menu_inline import main_menu_keyboard, admin_menu_keyboard
 from tgbot.keyboards.purchase_inline import payment_inline, buy_inline, purchase_callback, cancel_purchase_inline, \
     payment_inline_admin
-from tgbot.misc.db_api.postgres_db import Database
 from tgbot.misc.rate_limit import rate_limit
 from tgbot.misc.states import AdminMenu, User, Purchase, PurchaseMono
 
@@ -47,9 +45,8 @@ async def deeplink_purchase(message: types.Message, state: FSMContext):
                 pass
     else:
         if message.from_user.id in config.tg_bot.admin_ids:
-            await message.answer("<b>Меню администратора📀</b>\n\n"
-                                 "<i>режим администратора</i>",
-                                 reply_markup=admin_main_menu)
+            await message.answer("Добро пожаловать <b>Админ</b>📀",
+                                 reply_markup=admin_menu_keyboard)
 
             await User.mainMenu.set()
         else:
@@ -59,39 +56,50 @@ async def deeplink_purchase(message: types.Message, state: FSMContext):
             await User.mainMenu.set()
 
 
-async def purchase_product(call: CallbackQuery):
+async def purchase_product(call: CallbackQuery, state: FSMContext):
     await call.answer(cache_time=1)
-    config = call.bot.get('config')
     db = call.bot.get('db')
-
-    await call.message.delete_reply_markup()
+    data = await state.get_data()
 
     user = await db.select_user(telegram_id=call.from_user.id)
+    product = await db.select_product(product_id=data.get('product_id'))
 
-    await call.message.answer(
-        f"На вашем балансе бота: {user['balance']}💰\n\n"
-        f"<b>Выберите способ оплаты</b>",
-        reply_markup=buy_inline)
+    if product['quantity'] == 0:
+        await call.message.answer(text=f"Товар закончился🤷‍♂️\n\n"
+                                       f"<i>Для вызова меню используйте:</i> /start")
+
+    else:
+        await call.message.answer(
+            f"На вашем балансе бота: {user['balance']}💰\n\n"
+            f"<b>Выберите способ оплаты</b>",
+            reply_markup=buy_inline)
 
 
 async def pick_quantity_balance(call: CallbackQuery):
     await call.message.delete_reply_markup()
-    await call.message.answer("Введите количество товара для покупки📝")
+    await call.message.answer("Введите количество товара для покупки📝",
+                              reply_markup=cancel_purchase_inline)
 
     await Purchase.selectQuantity.set()
 
 
 async def buy_balance(message: types.Message, state: FSMContext):
-    config = message.bot.get('config')
     data = await state.get_data()
-    quantity = int(message.text)
     db = message.bot.get('db')
+    try:
+        quantity = int(message.text)
+    except ValueError:
+        await message.bot.edit_message_reply_markup(chat_id=message.chat.id,
+                                                    message_id=message.message_id - 1)
+        await message.answer("Введите число📝",
+                             reply_markup=cancel_purchase_inline)
+        await Purchase.selectQuantity.set()
+        return
 
     user = await db.select_user(telegram_id=message.from_user.id)
     product = await db.select_product(product_id=data.get('product_id'))
     if quantity <= product['quantity']:
         if user['balance'] >= product['price'] * quantity:
-            # await message.delete_reply_markup()
 
             await db.change_quantity(quantity=product['quantity'] - quantity, product_id=product['product_id'])
             await db.change_user_balance(balance=user['balance'] - product['price'], telegram_id=message.from_user.id)
@@ -114,7 +122,17 @@ async def buy_balance(message: types.Message, state: FSMContext):
             await message.answer("../error")
 
             await User.mainMenu.set()
+    elif product['quantity'] == 0:
+        await message.bot.edit_message_reply_markup(chat_id=message.chat.id,
+                                                    message_id=message.message_id - 1)
+        await message.answer("Товар закончился❌",
+                             reply_markup=cancel_purchase_inline)
+
+        await Purchase.selectQuantity.set()
     else:
+        await message.delete_reply_markup()
+        await message.bot.edit_message_reply_markup(chat_id=message.chat.id,
+                                                    message_id=message.message_id - 1)
         await message.answer("Неверное количество товара❌\n\n"
                              "Укажите количество товара для покупки📝",
                              reply_markup=cancel_purchase_inline)
@@ -134,7 +152,8 @@ def purchase_handler(dp: Dispatcher):
                                        purchase_callback.filter(button='cancel'),
                                        state=[Purchase.selectedProduct,
                                               Purchase.selectQuantity,
-                                              PurchaseMono.checkPayment])
+                                              PurchaseMono.checkPayment,
+                                              PurchaseMono.monoComplete])
     dp.register_message_handler(deeplink_purchase,
                                 commands="start",
                                 state=[User.mainMenu, AdminMenu.adminMenu]),

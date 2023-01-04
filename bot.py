@@ -69,7 +69,7 @@ async def main():
     logger.info("Starting bot")
     config = load_config(".env")
 
-    storage = RedisStorage2() if config.tg_bot.use_redis else MemoryStorage()
+    storage = MemoryStorage()
     bot = Bot(token=config.tg_bot.token, parse_mode='HTML')
     file_uploader = TelegraphService()
     dp = Dispatcher(bot, storage=storage)

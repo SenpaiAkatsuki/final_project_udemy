@@ -2,14 +2,12 @@ from aiogram import Dispatcher
 from aiogram.types import CallbackQuery
 from aiogram.utils.exceptions import ChatNotFound
 
-from tgbot.keyboards.admin_inline import admin_main_menu
-from tgbot.keyboards.main_menu_inline import main_menu_keyboard, menu_button_callback
+from tgbot.keyboards.main_menu_inline import main_menu_keyboard, menu_button_callback, admin_menu_keyboard
 from tgbot.keyboards.referral_menu_inline import referral_keyboard, referral_button_callback
-from tgbot.misc.db_api.postgres_db import Database
 from tgbot.misc.states import User, AdminMenu
 
 
-async def referral_menu(call: CallbackQuery, main_menu_keyboard_menu=None):
+async def referral_menu(call: CallbackQuery):
     referral_link = "https://t.me/ShzuyBot?start={id_referral}".format(
         id_referral=call.from_user.id
     )
@@ -24,7 +22,6 @@ async def referral_menu(call: CallbackQuery, main_menu_keyboard_menu=None):
 
 async def show_referrals(call: CallbackQuery):
     await call.answer(cache_time=1)
-    config = call.bot.get('config')
     db = call.bot.get('db')
 
     referrals = await db.check_referrals(call.from_user.id)
@@ -52,7 +49,7 @@ async def cancel_referrals(call: CallbackQuery):
     if call.from_user.id in config.tg_bot.admin_ids:
         await call.message.edit_text("Главное меню📀\n\n"
                                      "<i>режим администратора</i>",
-                                     reply_markup=admin_main_menu)
+                                     reply_markup=admin_menu_keyboard)
     else:
         await call.message.edit_text(f"Главное меню📀",
                                      reply_markup=main_menu_keyboard)

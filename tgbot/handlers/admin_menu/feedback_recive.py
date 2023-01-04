@@ -3,6 +3,7 @@ from datetime import date
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
+from aiogram.utils.exceptions import ChatNotFound
 
 from tgbot.keyboards.feedback_inilne import confirm_feedback_inline, feedback_callback
 from tgbot.misc.states import AdminMenu, User
@@ -29,7 +30,8 @@ async def confirm_feedback(message: types.Message, state: FSMContext):
         feedback=message.text,
         from_user=message.from_user.full_name,
         time=date.today().strftime("%d/%m/%Y"),
-        user_mention=message.from_user.get_mention()
+        user_mention=message.from_user.get_mention(),
+        full_name=message.from_user.full_name
     )
 
     await Feedback.getFeedback.set()
@@ -46,9 +48,8 @@ async def submit_feedback(call: types.CallbackQuery, state: FSMContext):
     for sup in config.tg_bot.supports:
         await call.bot.send_message(sup,
                                     f"Прислал: {data.get('user_mention')}\n"
-                                    f"дата сообщения🗓 <b>{data.get('time')}</b>\n\n"
+                                    f"Дата сообщения🗓 <b>{data.get('time')}</b>\n\n"
                                     f"{data.get('feedback')}")
-
     await User.mainMenu.set()
 
 

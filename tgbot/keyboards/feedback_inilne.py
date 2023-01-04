@@ -1,8 +1,6 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.callback_data import CallbackData
 
-from tgbot.keyboards.main_menu_inline import menu_button_callback
-
 feedback_callback = CallbackData("feedback", "button")
 
 feedback_inline = InlineKeyboardMarkup(row_width=1,

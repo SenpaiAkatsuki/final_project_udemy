@@ -1,19 +1,16 @@
 from aiogram import Dispatcher, types
-from aiogram.dispatcher import FSMContext
 from aiogram.types import Message, CallbackQuery
 from aiogram.utils.markdown import bold
 
-from tgbot.keyboards.admin_inline import admin_main_menu
-from tgbot.keyboards.main_menu_inline import main_menu_keyboard
+from tgbot.keyboards.main_menu_inline import main_menu_keyboard, admin_menu_keyboard
 from tgbot.keyboards.user_start_inline import user_callback, cancel_keyboard, verification_buttons
 from tgbot.misc import subscription
-from tgbot.misc.db_api.postgres_db import Database
 from tgbot.misc.rate_limit import rate_limit
-from tgbot.misc.states import User, Code_check, AdminMenu
+from tgbot.misc.states import User, Codecheck, AdminMenu
 
 
 @rate_limit(limit=3)
-async def user_start(message: Message, state: FSMContext):
+async def user_start(message: Message):
     # try:
     config = message.bot.get('config')
     db = message.bot.get('db')
@@ -28,17 +25,17 @@ async def user_start(message: Message, state: FSMContext):
 
     if message.from_user.id in allowed_users:
         if message.from_user.id in config.tg_bot.admin_ids:
-            await message.answer("Welcome back <b>admin</b>",
-                                 reply_markup=admin_main_menu)
+            await message.answer("<b>Меню администратора📀</b>\n\n"
+                                 "<i>режим администратора</i>",
+                                 reply_markup=admin_menu_keyboard)
             await AdminMenu.adminMenu.set()
         else:
-            await message.answer("Welcome back",
+            await message.answer("Добро пожаловать в главное меню📀",
                                  reply_markup=main_menu_keyboard)
             await User.mainMenu.set()
 
     elif arguments:
         users_referrals = await db.get_telegram_id()
-        product_id = await db.get_product_id()
         for referral_id in users_referrals:
             if arguments == str(referral_id[0]):
                 user = await db.select_user(telegram_id=int(arguments))
@@ -69,11 +66,11 @@ async def user_start(message: Message, state: FSMContext):
             elif arguments == "registration":
                 if message.from_user.id in allowed_users:
                     if message.from_user.id in config.tg_bot.admin_ids:
-                        await message.answer("Welcome back <b>admin</b>",
-                                             reply_markup=admin_main_menu)
+                        await message.answer("Добро пожаловать <b>Админ</b>📀",
+                                             reply_markup=admin_menu_keyboard)
                         await AdminMenu.adminMenu.set()
                     else:
-                        await message.answer("Welcome back",
+                        await message.answer("Добро пожаловать в главное меню📀",
                                              reply_markup=main_menu_keyboard)
                         await User.mainMenu.set()
                 else:
@@ -95,7 +92,7 @@ async def user_start(message: Message, state: FSMContext):
         await User.untilApproved.set()
 
 
-async def check_subscription_to_chanel(call: types.CallbackQuery, state: FSMContext):
+async def check_subscription_to_chanel(call: types.CallbackQuery):
     await call.answer(cache_time=2)
     result = str()
     config = call.bot.get('config')
@@ -114,17 +111,16 @@ async def check_subscription_to_chanel(call: types.CallbackQuery, state: FSMCont
             )
             await User.mainMenu.set()
         else:
-            invite_link = await call.bot.export_chat_invite_link(chat_id=channel)
             result += f"Подписка на канал {bold('не оформлена')}!"
             await User.untilApproved.set()
     await call.message.edit_text(result, reply_markup=None)
 
 
-async def check_invite(call: types.CallbackQuery, state: FSMContext):
+async def check_invite(call: types.CallbackQuery):
     await call.answer(cache_time=2)
     await call.message.edit_text("Пришлите код приглашение",
                                  reply_markup=cancel_keyboard)
-    await Code_check.Q1.set()
+    await Codecheck.Q1.set()
 
 
 async def check_invite_code_approve(message: Message):
@@ -145,10 +141,10 @@ async def check_invite_code_approve(message: Message):
         await message.reply("Неверный код❌\n"
                             "Проверьте правильно ли вы указали все цифры <b>(без пробелов и символов)</b>")
 
-        await Code_check.Q1.set()
+        await Codecheck.Q1.set()
 
 
-async def cancel_menu(call: CallbackQuery, state: FSMContext):
+async def cancel_menu(call: CallbackQuery):
     await call.answer(cache_time=2)
     chat = await call.bot.get_chat(chat_id=-1001480349007)
     await call.message.edit_text(f"❗Перед использованием бота нужно подтвердить регистрацию❗\n"
@@ -161,7 +157,7 @@ async def cancel_menu(call: CallbackQuery, state: FSMContext):
 
 def register_user(dp: Dispatcher):
     dp.register_message_handler(user_start, commands=["start"], state="*")
-    dp.register_message_handler(check_invite_code_approve, state=Code_check.Q1)
+    dp.register_message_handler(check_invite_code_approve, state=Codecheck.Q1)
     dp.register_callback_query_handler(check_subscription_to_chanel,
                                        user_callback.filter(type="member_check"),
                                        state=User.untilApproved)

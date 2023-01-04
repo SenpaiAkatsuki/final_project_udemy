@@ -27,17 +27,15 @@ payment_inline = InlineKeyboardMarkup(row_width=1,
 
 payment_inline_admin = InlineKeyboardMarkup(row_width=1,
                                             inline_keyboard=[
-                                                [
-                                                    InlineKeyboardButton("Купить товар💰",
-                                                                         callback_data="buy:buy_product")
-                                                ],
-                                                [
-                                                    InlineKeyboardButton("Редактировать🔧",
-                                                                         callback_data=redact_callback.new(
-                                                                             button="redact_product"
-                                                                         ))
-                                                ]
+
                                             ])
+payment_inline_admin.inline_keyboard.append(payment_inline.inline_keyboard[0])
+payment_inline_admin.inline_keyboard.append([
+    InlineKeyboardButton("Редактировать🔧",
+                         callback_data=redact_callback.new(
+                             button="redact_product"
+                         ))
+])
 
 redact_product_inline = InlineKeyboardMarkup(row_width=1,
                                              inline_keyboard=[

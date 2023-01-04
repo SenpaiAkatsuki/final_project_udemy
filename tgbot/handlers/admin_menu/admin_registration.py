@@ -2,8 +2,8 @@ from aiogram import Dispatcher
 from aiogram.types import Message, CallbackQuery
 from asyncpg import UniqueViolationError
 
-from tgbot.keyboards.admin_inline import admin_panel_buttons, admin_panel_callback, admin_main_menu
-from tgbot.misc.db_api.postgres_db import Database
+from tgbot.keyboards.admin_inline import admin_panel_buttons, admin_panel_callback
+from tgbot.keyboards.main_menu_inline import admin_menu_keyboard
 from tgbot.misc.rate_limit import rate_limit
 from tgbot.misc.states import User, AdminMenu
 
@@ -19,7 +19,7 @@ async def admin_start(message: Message):
         pass
 
     await message.reply("Добро пожаловать <b>Админ</b>📀",
-                        reply_markup=admin_main_menu)
+                        reply_markup=admin_menu_keyboard)
     await AdminMenu.adminMenu.set()
 
 
@@ -33,7 +33,8 @@ async def admin_panel(call: CallbackQuery):
 async def return_to_user_mode(call: CallbackQuery):
     await call.message.edit_text("<b>Меню пользователя📀</b>\n\n"
                                  "<i>режим администратора</i>",
-                                 reply_markup=admin_main_menu)
+                                 reply_markup=admin_menu_keyboard)
+
     await User.mainMenu.set()
 
 

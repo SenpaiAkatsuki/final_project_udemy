@@ -4,14 +4,12 @@ from aiogram import types, Dispatcher
 from aiogram.utils.exceptions import ResultIdDuplicate
 
 from tgbot.keyboards.purchase_inline import purchase_keyboard
-from tgbot.misc.db_api.postgres_db import Database
 from tgbot.misc.states import User, AdminMenu
 
 
 async def add_product(query: types.InlineQuery):
     items = []
     logging.info("WORKING INLINE")
-    config = query.bot.get('config')
     db = query.bot.get('db')
 
     logging.info("Inline query is: %s", query.query)
@@ -46,7 +44,12 @@ async def add_product(query: types.InlineQuery):
         logging.info(products)
         logging.info("WORKING DUPLICATE")
         pass
-
+    except Exception as e:
+        logging.info(e)
+        logging.info("PRODUCT ERROR")
+        await query.bot.send_message(query.from_user.id, "Похоже с этим товаром что-то не так, попробуйте позже "
+                                                         "или обратитесь в вкладу <b>Обратная связь</b>")
+        pass
 
 
 def product_inline_query(dp: Dispatcher):

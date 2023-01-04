@@ -8,12 +8,12 @@ from aiogram.types import CallbackQuery
 from tgbot.integrations.telegraph import FileUploader
 from tgbot.keyboards.admin_inline import admin_panel_callback, product_creation_cancel, cancel_callback, \
     admin_panel_buttons
-from tgbot.misc.db_api.postgres_db import Database
 from tgbot.misc.states import AdminMenu, CreateProduct
 
 
-async def start_create_product(call: CallbackQuery, state: FSMContext):
+async def start_create_product(call: CallbackQuery):
     await call.answer()
+
     await call.message.answer("🖍Введите кодовое слово продукта\n\n"
                               "<b>❗️код устанавливается один раз, редактировать в будущем не получится❗️</b>",
                               reply_markup=product_creation_cancel)
@@ -25,27 +25,40 @@ async def start_create_product(call: CallbackQuery, state: FSMContext):
 
 async def catch_id(message: types.Message, state: FSMContext):
     pattern = re.compile(r'^[a-z,A-Z]{1,64}$')  # 1-64 latin letters
+    db = message.bot.get("db")
+    products = await db.get_products()
 
     if pattern.match(message.text):
-        await message.bot.edit_message_text(chat_id=message.from_user.id,
-                                            message_id=message.message_id - 1,
-                                            text=f"Кодовое слово☑️️",
-                                            reply_markup=None)
+        for i in products:
+            if message.text in products[0]['product_id']:
+                await message.answer("Такой продукт уже существует❌\n\n"
+                                     "Пришлите кодовое слово еще раз",
+                                     reply_markup=product_creation_cancel)
 
-        await state.update_data(
-            {
-                "tag": message.text
-            }
-        )
+                await message.bot.edit_message_reply_markup(chat_id=message.from_user.id,
+                                                            message_id=message.message_id - 1,
+                                                            reply_markup=None)
+            else:
+                await message.bot.edit_message_text(chat_id=message.from_user.id,
+                                                    message_id=message.message_id - 1,
+                                                    text=f"Кодовое слово☑️️",
+                                                    reply_markup=None)
 
-        await message.answer("🖍Введите <b>титульное имя</b> товара\n",
-                             reply_markup=product_creation_cancel)
+                await state.update_data(
+                    {
+                        "tag": message.text
+                    }
+                )
 
-        await CreateProduct.step_id.set()
+                await message.answer("🖍Введите <b>титульное имя</b> товара\n",
+                                     reply_markup=product_creation_cancel)
+
+                await CreateProduct.step_id.set()
 
     else:
         await message.answer("Неверный формат❌\n\n"
-                             "Пришлите кодовое слово еще раз",
+                             "Пришлите кодовое слово еще ра\n\n"
+                             "<b>используйте только латинские символы</b>",
                              reply_markup=product_creation_cancel)
 
         await message.bot.edit_message_reply_markup(chat_id=message.from_user.id,
@@ -84,17 +97,19 @@ async def catch_name(message: types.Message, state: FSMContext):
 
 
 async def catch_description(message: types.Message, state: FSMContext):
-    if message.text:
+    pattern = re.compile(r'^.{1,255}$') # 1-255 symbols
+
+    if pattern.match(message.text):
+        await message.bot.edit_message_text(chat_id=message.from_user.id,
+                                            message_id=message.message_id - 1,
+                                            text=f"Описание☑️",
+                                            reply_markup=None)
+
         await state.update_data(
             {
                 "description": message.text
             }
         )
-
-        await message.bot.edit_message_text(chat_id=message.from_user.id,
-                                            message_id=message.message_id - 1,
-                                            text=f"Описание☑️",
-                                            reply_markup=None)
 
         await message.answer("🖍Введите <b>цену</b> для товара",
                              reply_markup=product_creation_cancel)
@@ -102,7 +117,7 @@ async def catch_description(message: types.Message, state: FSMContext):
         await CreateProduct.step_description.set()
     else:
         await message.answer("Неверный формат❌\n\n"
-                             "Пришлите титульное имя еще раз",
+                             "До 255 символов",
                              reply_markup=product_creation_cancel)
 
         await message.bot.edit_message_reply_markup(chat_id=message.from_user.id,
@@ -145,7 +160,6 @@ async def catch_price(message: types.Message, state: FSMContext):
 
 
 async def end_creation_product(message: types.Message, file_uploader: FileUploader, state: FSMContext):
-    config = message.bot.get('config')
     db = message.bot.get('db')
 
     if message.photo:

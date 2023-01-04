@@ -6,9 +6,9 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.types import CallbackQuery
 from aiogram.utils.exceptions import ChatNotFound
 
-from tgbot.keyboards.admin_inline import admin_panel_callback, admin_main_menu
+from tgbot.keyboards.admin_inline import admin_panel_callback
 from tgbot.keyboards.announcement_inline import announcement_inline_keyboard, announcement_callback
-from tgbot.misc.db_api.postgres_db import Database
+from tgbot.keyboards.main_menu_inline import admin_menu_keyboard
 from tgbot.misc.states import AdminMenu
 
 
@@ -44,9 +44,6 @@ async def accept_announcement(call: types.CallbackQuery, state: FSMContext):
 
     users = await db.select_all_users()
 
-    await call.message.edit_text("<b>Ваш пост отправлен пользователям</b>✔️",
-                                 reply_markup=admin_main_menu)
-
     for usr in users:
         if usr['telegram_id'] not in config.tg_bot.admin_ids:
             try:
@@ -54,6 +51,11 @@ async def accept_announcement(call: types.CallbackQuery, state: FSMContext):
                                             text=data.get('announcement'))
             except ChatNotFound:
                 logging.info(f"no such user found")
+
+    await call.message.edit_text(f"<b>Ваш пост отправлен пользователям</b>✔️\n\n"
+                                 f"{data.get('announcement')}",
+                                 reply_markup=admin_menu_keyboard)
+    await AdminMenu.adminMenu.set()
 
 
 async def redact_announcement(call: CallbackQuery, state: FSMContext):
@@ -69,7 +71,7 @@ async def redact_announcement(call: CallbackQuery, state: FSMContext):
 
 async def cancel_announcement(call: CallbackQuery):
     await call.message.edit_text("Отмена рассылки❌",
-                                 reply_markup=admin_main_menu)
+                                 reply_markup=admin_menu_keyboard)
 
     await AdminMenu.adminMenu.set()
 

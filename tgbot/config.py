@@ -37,6 +37,7 @@ class Miscellaneous:
     allowed_users: list = None
     secret_code: str = None
     mono_token: str = None
+    mono_card_id: str = None
 
 
 @dataclass
@@ -62,13 +63,14 @@ def load_config(path: str = None):
         db=DbConfig(
             host=env.str('DB_HOST'),
             password=env.str('PG_PASSWORD'),
-            user=env.str('DB_USER'),
-            database=env.str('DB_NAME')
+            user=env.str('PG_USER'),
+            database=env.str('PG_NAME')
         ),
         misc=Miscellaneous(
             allowed_users=[],
             secret_code=env.str('SECRET_CODE'),
-            mono_token=env.str('MONO_TOKEN')
+            mono_token=env.str('MONO_TOKEN'),
+            mono_card_id=env.str('MONO_CARD_ID')
         ),
         channel=Channel(
             channel_id=env.list("CHANNELS")

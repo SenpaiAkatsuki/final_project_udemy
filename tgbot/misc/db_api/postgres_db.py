@@ -1,7 +1,6 @@
 import logging
 from typing import Union
 
-from aiogram import types
 from asyncpg import Pool, Connection, DuplicateTableError, create_pool
 
 
@@ -109,13 +108,21 @@ class Database:
         sql = "SELECT product_id FROM Products"
         return await self.execute(sql, fetch=True)
 
-    async def redact_product(self, name, description, price, photo, product_id=None):
-        sql = "UPDATE products SET (name, description, price, photo) = ($1, $2, $3, $4) WHERE product_id = $5"
-        return await self.execute(sql, name, description, price, photo, product_id, execute=True)
+    async def update_product_name(self, name, product_id):
+        sql = "UPDATE products SET name = $1 WHERE product_id = $2"
+        return await self.execute(sql, name, product_id, execute=True)
 
-    async def change_price(self, price, product_name):
-        sql = "UPDATE Products SET price=$1 WHERE product_name=$2"
-        return await self.execute(sql, price, product_name, execute=True)
+    async def update_product_description(self, description, product_id):
+        sql = "UPDATE products SET description = $1 WHERE product_id = $2"
+        return await self.execute(sql, description, product_id, execute=True)
+
+    async def update_product_price(self, price, product_id):
+        sql = "UPDATE products SET price = $1 WHERE product_id = $2"
+        return await self.execute(sql, price, product_id, execute=True)
+
+    async def update_product_photo(self, photo, product_id):
+        sql = "UPDATE products SET photo = $1 WHERE product_id = $2"
+        return await self.execute(sql, photo, product_id, execute=True)
 
     # ========================================= SQL commands for users =========================================
     async def add_user(self, username, telegram_id, referral_id=None):
