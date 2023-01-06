@@ -16,7 +16,7 @@ async def user_start(message: Message):
     db = message.bot.get('db')
     allowed_users = []
 
-    chat = await message.bot.get_chat(chat_id=-1001480349007)
+    chat = await message.bot.get_chat(chat_id=config.channel.channel_id[0])
     arguments = message.get_args()
     list_of_telegram_id = await db.get_telegram_id()
 
@@ -118,7 +118,7 @@ async def check_subscription_to_chanel(call: types.CallbackQuery):
 
 async def check_invite(call: types.CallbackQuery):
     await call.answer(cache_time=2)
-    await call.message.edit_text("Пришлите код приглашение",
+    await call.message.edit_text("Пришлите код приглашение🔢",
                                  reply_markup=cancel_keyboard)
     await Codecheck.Q1.set()
 
@@ -132,7 +132,7 @@ async def check_invite_code_approve(message: Message):
             telegram_id=message.from_user.id,
             username=message.from_user.username
         )
-        await message.answer(f"Доступ получен✅!")
+        await message.answer(f"Доступ получен☑️!")
         await message.answer("Добро пожаловать в главное меню",
                              reply_markup=main_menu_keyboard)
 

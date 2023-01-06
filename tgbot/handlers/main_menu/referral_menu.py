@@ -8,8 +8,10 @@ from tgbot.misc.states import User, AdminMenu
 
 
 async def referral_menu(call: CallbackQuery):
-    referral_link = "https://t.me/ShzuyBot?start={id_referral}".format(
-        id_referral=call.from_user.id
+    bot = await call.bot.get_me()
+    referral_link = "https://t.me/{bot}?start={id_referral}".format(
+        id_referral=call.from_user.id,
+        bot=bot.username
     )
     await call.message.edit_text(f"<b>Меню рефералов</b>\n\n"
                                  f"Пригласите человека через вашу"

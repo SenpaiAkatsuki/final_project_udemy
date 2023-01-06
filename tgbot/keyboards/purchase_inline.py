@@ -6,12 +6,12 @@ purchase_callback = CallbackData("buy", "button")
 redact_callback = CallbackData("redact", 'button')
 
 
-def purchase_keyboard(key):
+def purchase_keyboard(key, bot):
     show_purchase_keyboard = InlineKeyboardMarkup(row_width=2,
                                                   inline_keyboard=[
                                                       [
                                                           InlineKeyboardButton("Показать товар📚",
-                                                                               url=f"https://t.me/ShzuyBot?start={key}")
+                                                                               url=f"https://t.me/{bot}?start={key}")
                                                       ]
                                                   ])
     return show_purchase_keyboard

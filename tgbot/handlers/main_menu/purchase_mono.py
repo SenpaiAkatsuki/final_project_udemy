@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 import monobank
 from aiogram import types, Dispatcher
@@ -57,7 +58,7 @@ async def purchase_buy_mono(message: types.Message, state: FSMContext):
         link = "https://send.monobank.ua/Cu1UerRfu?f=enable&amount={amount}&text={text}"
         if product['quantity'] >= quantity:
             await message.bot.edit_message_reply_markup(chat_id=message.chat.id,
-                                                        message_id=message.message_id - 1,)
+                                                        message_id=message.message_id - 1, )
             await message.answer(text=link.format(amount=f"{price}", text=f"{message.from_user.id}"))
             await message.answer(text=f"Оплатите сумму в размере {price}₴,\n"
                                       f"после нажмите на кнопку для проверки оплаты💵\n\n"
@@ -95,6 +96,7 @@ async def check_payment(call: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     config = call.bot.get('config')
     db = call.bot.get('db')
+    logging.info('working')
 
     mono = monobank.Client(config.misc.mono_token)
     product = await db.select_product(product_id=data.get('product_id'))
@@ -104,6 +106,7 @@ async def check_payment(call: CallbackQuery, state: FSMContext):
         monoData = mono.get_statements(f'{config.misc.mono_card_id}',
                                        datetime.datetime.now() - datetime.timedelta(days=2),
                                        datetime.datetime.now())
+        print(monoData)
         if monoData:
             for k in monoData:
                 if k['id'] not in user['purchase_list']:
@@ -133,14 +136,15 @@ async def check_payment(call: CallbackQuery, state: FSMContext):
                             await User.mainMenu.set()
 
                         break
-                else:
-                    await call.message.answer(f"Оплата не найдена, попробуйте еще раз❕\n\n"
-                                              f"Убедитесь что вы оставили комментарий при оплате❔\n"
-                                              f"Если есть вопросы используйте вкладку <b>помощь</b>\n"
-                                              f"<i>Главное меню -> Обратная связь</i>")
+            else:
+                await call.message.answer(f"Оплата не найдена, попробуйте еще раз❕\n\n"
+                                          f"Убедитесь что вы оставили комментарий при оплате❔\n"
+                                          f"Если есть вопросы используйте вкладку <b>помощь</b>\n"
+                                          f"<i>Главное меню -> Обратная связь</i>")
 
-                    await PurchaseMono.monoComplete.set()
+                await PurchaseMono.monoComplete.set()
         else:
+            print('working here')
             await call.message.answer("Платеж не найден❔ "
                                       "Возможно стоит подождать, иногда это занимает пару минут")
 

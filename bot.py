@@ -12,6 +12,7 @@ from tgbot.handlers.admin_menu.announcement_handler import register_announcement
 from tgbot.handlers.admin_menu.feedback_recive import register_feedback_receive_handler
 from tgbot.handlers.admin_menu.generate_product import register_inlineMode_handler_admin
 from tgbot.handlers.admin_menu.redact_product import redact_product_handlers
+from tgbot.handlers.error.error_handler import register_error_handler
 from tgbot.handlers.inline_registration import RegistrationInline_handler
 from tgbot.handlers.main_menu.feedback import register_feedback_handler
 from tgbot.handlers.main_menu.purchase_handler import purchase_handler
@@ -54,6 +55,8 @@ def register_all_handlers(dp):
 
     redact_product_handlers(dp)
     product_inline_query(dp)
+
+    register_error_handler(dp)
 
 
 async def set_all_default_commands(dp: Dispatcher):

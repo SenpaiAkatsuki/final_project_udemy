@@ -11,6 +11,7 @@ async def add_product(query: types.InlineQuery):
     items = []
     logging.info("WORKING INLINE")
     db = query.bot.get('db')
+    bot = await query.bot.get_me()
 
     logging.info("Inline query is: %s", query.query)
     if query.query == '':
@@ -18,8 +19,6 @@ async def add_product(query: types.InlineQuery):
     else:
         products = await db.get_products_sorted(str(query.query) + '%')
 
-    print(query.query == "")
-    print(products)
     for value in products:
         items.append(
             types.InlineQueryResultArticle(
@@ -33,7 +32,7 @@ async def add_product(query: types.InlineQuery):
                 title=value.get('name'),
                 thumb_url=value.get('photo'),
                 description=value.get('description'),
-                reply_markup=purchase_keyboard(key=value.get('product_id'))
+                reply_markup=purchase_keyboard(key=value.get('product_id'), bot=bot.username)
             ))
 
     try:
