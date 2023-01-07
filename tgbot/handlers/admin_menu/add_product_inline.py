@@ -25,9 +25,11 @@ async def add_product(query: types.InlineQuery):
                 id=value.get('product_id'),
                 input_message_content=types.InputTextMessageContent(
                     message_text=f"{value.get('photo')}\n\n\n"
+                                 f"+----------------------------------------------------+\n"
                                  f"<b>{value.get('name')}</b>\n\n"
-                                 f"{value.get('description')}\n\n"
-                                 f"Цена: {value.get('price')}💰",
+                                 f"{value.get('description')}\n"
+                                 f"Цена: <b>{value.get('price')}💰</b>\n"
+                                 f"+----------------------------------------------------+",
                 ),
                 title=value.get('name'),
                 thumb_url=value.get('photo'),

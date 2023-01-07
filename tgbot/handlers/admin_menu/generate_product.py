@@ -28,9 +28,9 @@ async def catch_id(message: types.Message, state: FSMContext):
     db = message.bot.get("db")
     products = await db.get_products()
 
-    if pattern.match(message.text):
-        for i in products:
-            if message.text in products[0]['product_id']:
+    if message.text and pattern.match(message.text):
+        for tag in products:
+            if message.text in tag['product_id']:
                 await message.answer("Такой продукт уже существует❌\n\n"
                                      "Пришлите кодовое слово еще раз",
                                      reply_markup=product_creation_cancel)
@@ -38,22 +38,23 @@ async def catch_id(message: types.Message, state: FSMContext):
                 await message.bot.edit_message_reply_markup(chat_id=message.from_user.id,
                                                             message_id=message.message_id - 1,
                                                             reply_markup=None)
-            else:
-                await message.bot.edit_message_text(chat_id=message.from_user.id,
-                                                    message_id=message.message_id - 1,
-                                                    text=f"Кодовое слово☑️️",
-                                                    reply_markup=None)
+                return
+        else:
+            await message.bot.edit_message_text(chat_id=message.from_user.id,
+                                                message_id=message.message_id - 1,
+                                                text=f"Кодовое слово☑️️",
+                                                reply_markup=None)
 
-                await state.update_data(
-                    {
-                        "tag": message.text
-                    }
-                )
+            await state.update_data(
+                {
+                    "tag": message.text
+                }
+            )
 
-                await message.answer("🖍Введите <b>титульное имя</b> товара\n",
-                                     reply_markup=product_creation_cancel)
+            await message.answer("🖍Введите <b>титульное имя</b> товара\n",
+                                 reply_markup=product_creation_cancel)
 
-                await CreateProduct.step_id.set()
+            await CreateProduct.step_id.set()
 
     else:
         await message.answer("Неверный формат❌\n\n"
@@ -68,25 +69,38 @@ async def catch_id(message: types.Message, state: FSMContext):
 
 
 async def catch_name(message: types.Message, state: FSMContext):
-    if message.text:
-        await state.update_data(
-            {
-                "name": message.text
-            }
-        )
+    pattern = re.compile(r'^.{1,255}$')
 
-        await message.bot.edit_message_text(chat_id=message.from_user.id,
-                                            message_id=message.message_id - 1,
-                                            text=f"Титульное имя☑️\n\n",
-                                            reply_markup=None)
+    if message.text and pattern.match(message.text):
+        if message.text:
+            await state.update_data(
+                {
+                    "name": message.text
+                }
+            )
 
-        await message.answer("🖍Введите <b>описание</b> товара",
-                             reply_markup=product_creation_cancel)
+            await message.bot.edit_message_text(chat_id=message.from_user.id,
+                                                message_id=message.message_id - 1,
+                                                text=f"Титульное имя☑️\n\n",
+                                                reply_markup=None)
 
-        await CreateProduct.step_name.set()
+            await message.answer("🖍Введите <b>описание</b> товара",
+                                 reply_markup=product_creation_cancel)
+
+            await CreateProduct.step_name.set()
+        else:
+            await message.answer("Неверный формат❌\n\n"
+                                 "Пришлите титульное имя еще раз",
+                                 reply_markup=product_creation_cancel)
+
+            await message.bot.edit_message_reply_markup(chat_id=message.from_user.id,
+                                                        message_id=message.message_id - 1,
+                                                        reply_markup=None)
+
+            await CreateProduct.step_id.set()
     else:
         await message.answer("Неверный формат❌\n\n"
-                             "Пришлите титульное имя еще раз",
+                             "<b>Пришлите имя товара до 255 символов</b>",
                              reply_markup=product_creation_cancel)
 
         await message.bot.edit_message_reply_markup(chat_id=message.from_user.id,
@@ -97,9 +111,9 @@ async def catch_name(message: types.Message, state: FSMContext):
 
 
 async def catch_description(message: types.Message, state: FSMContext):
-    pattern = re.compile(r'^.{1,255}$') # 1-255 symbols
+    pattern = re.compile(r'^.{1,255}$')  # 1-255 symbols
 
-    if pattern.match(message.text):
+    if message.text and pattern.match(message.text):
         await message.bot.edit_message_text(chat_id=message.from_user.id,
                                             message_id=message.message_id - 1,
                                             text=f"Описание☑️",
@@ -117,7 +131,7 @@ async def catch_description(message: types.Message, state: FSMContext):
         await CreateProduct.step_description.set()
     else:
         await message.answer("Неверный формат❌\n\n"
-                             "До 255 символов",
+                             "<b>Пришлите описание до 255 символов</b>",
                              reply_markup=product_creation_cancel)
 
         await message.bot.edit_message_reply_markup(chat_id=message.from_user.id,
@@ -130,7 +144,7 @@ async def catch_description(message: types.Message, state: FSMContext):
 async def catch_price(message: types.Message, state: FSMContext):
     pattern = re.compile(r'^\d{1,10}$')  # 1-10 digits
 
-    if pattern.match(message.text):
+    if message.text and pattern.match(message.text):
         await state.update_data(
             {
                 "price": message.text

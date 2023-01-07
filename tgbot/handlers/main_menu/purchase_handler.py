@@ -109,7 +109,7 @@ async def buy_balance(message: types.Message, state: FSMContext):
             await message.answer_photo(photo=product['photo'],
                                        caption=f"Успешная покупка!\n\n"
                                                f"С вашего баланса снято {total_price}💰 остаток баланса "
-                                               f"{user['balance']}\n\n"
+                                               f"{user['balance'] - total_price}\n\n"
                                                f"<i>для вызова меню используйте:</i> /start")
 
             await User.mainMenu.set()
@@ -134,7 +134,6 @@ async def buy_balance(message: types.Message, state: FSMContext):
 
         await Purchase.selectQuantity.set()
     else:
-        # await message.delete_reply_markup()
         await message.bot.edit_message_reply_markup(chat_id=message.chat.id,
                                                     message_id=message.message_id - 1)
         await message.answer("Неверное количество товара❌\n\n"
