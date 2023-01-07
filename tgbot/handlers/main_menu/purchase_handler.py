@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
@@ -69,6 +71,7 @@ async def purchase_product(call: CallbackQuery, state: FSMContext):
                                        f"<i>Для вызова меню используйте:</i> /start")
 
     else:
+        await call.message.delete_reply_markup()
         await call.message.answer(
             f"На вашем балансе бота: {user['balance']}💰\n\n"
             f"<b>Выберите способ оплаты</b>",

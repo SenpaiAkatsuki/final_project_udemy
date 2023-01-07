@@ -20,7 +20,7 @@ def purchase_keyboard(key, bot):
 payment_inline = InlineKeyboardMarkup(row_width=1,
                                       inline_keyboard=[
                                           [
-                                              InlineKeyboardButton("Купить товар💰",
+                                              InlineKeyboardButton("Приобрести товар💰",
                                                                    callback_data="buy:buy_product")
                                           ]
                                       ])
