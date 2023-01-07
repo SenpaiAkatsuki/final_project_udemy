@@ -6,12 +6,7 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.utils.exceptions import ChatNotFound
 
 from tgbot.keyboards.feedback_inilne import confirm_feedback_inline, feedback_callback
-from tgbot.misc.states import AdminMenu, User
-
-
-class Feedback(StatesGroup):
-    confirmFeedback = State()
-    getFeedback = State()
+from tgbot.misc.states import AdminMenu, User, Feedback
 
 
 async def get_feedback(call: types.CallbackQuery):

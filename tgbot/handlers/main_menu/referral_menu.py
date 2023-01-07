@@ -4,7 +4,7 @@ from aiogram.utils.exceptions import ChatNotFound
 
 from tgbot.keyboards.main_menu_inline import main_menu_keyboard, menu_button_callback, admin_menu_keyboard
 from tgbot.keyboards.referral_menu_inline import referral_keyboard, referral_button_callback
-from tgbot.misc.states import User, AdminMenu
+from tgbot.misc.states import User, AdminMenu, Feedback
 
 
 async def referral_menu(call: CallbackQuery):
@@ -45,7 +45,7 @@ async def show_referrals(call: CallbackQuery):
                                   f"{result}")
 
 
-async def cancel_referrals(call: CallbackQuery):
+async def cancel_to_menu(call: CallbackQuery):
     await call.answer(cache_time=1)
     config = call.bot.get('config')
     if call.from_user.id in config.tg_bot.admin_ids:
@@ -62,5 +62,5 @@ def register_referral(dp: Dispatcher):
                                        state=[User.mainMenu, AdminMenu.adminMenu])
     dp.register_callback_query_handler(show_referrals, referral_button_callback.filter(button="show_referrals"),
                                        state=[User.mainMenu, AdminMenu.adminMenu])
-    dp.register_callback_query_handler(cancel_referrals, referral_button_callback.filter(button="cancel_referrals"),
+    dp.register_callback_query_handler(cancel_to_menu, referral_button_callback.filter(button="cancel_referrals"),
                                        state=[User.mainMenu, AdminMenu.adminMenu])

@@ -12,7 +12,7 @@ feedback_inline = InlineKeyboardMarkup(row_width=1,
                                                                     ))
                                            ],
                                            [
-                                               InlineKeyboardButton(text="Назад🈲",
+                                               InlineKeyboardButton(text="Назад🔚",
                                                                     callback_data="feedback:cancel_feedback"
                                                                     )
                                            ]
@@ -27,7 +27,7 @@ confirm_feedback_inline = InlineKeyboardMarkup(row_width=2,
                                                                             )),
 
                                                        InlineKeyboardButton("Отмена❌",
-                                                                            callback_data="feedback:cancel_feedback")
+                                                                            callback_data="feedback:cancel_receive")
                                                    ]
                                                ])
 

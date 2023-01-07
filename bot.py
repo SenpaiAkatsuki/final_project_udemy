@@ -9,7 +9,7 @@ from tgbot.filters.admin import AdminFilter
 from tgbot.handlers.admin_menu.add_product_inline import product_inline_query
 from tgbot.handlers.admin_menu.admin_registration import register_admin
 from tgbot.handlers.admin_menu.announcement_handler import register_announcement_handler
-from tgbot.handlers.admin_menu.feedback_recive import register_feedback_receive_handler
+from tgbot.handlers.admin_menu.feedback_receive import register_feedback_receive_handler
 from tgbot.handlers.admin_menu.generate_product import register_inlineMode_handler_admin
 from tgbot.handlers.admin_menu.redact_product import redact_product_handlers
 from tgbot.handlers.error.error_handler import register_error_handler

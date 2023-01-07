@@ -13,6 +13,9 @@ class AdminMenu(StatesGroup):
 class Codecheck(StatesGroup):
     Q1 = State()
 
+class Feedback(StatesGroup):
+    confirmFeedback = State()
+    getFeedback = State()
 
 class PurchaseMono(StatesGroup):
     checkPayment = State()
