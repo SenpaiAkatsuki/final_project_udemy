@@ -23,7 +23,7 @@ async def referral_menu(call: CallbackQuery):
 
 
 async def show_referrals(call: CallbackQuery):
-    await call.answer(cache_time=1)
+    await call.answer()
     db = call.bot.get('db')
 
     referrals = await db.check_referrals(call.from_user.id)
@@ -46,7 +46,7 @@ async def show_referrals(call: CallbackQuery):
 
 
 async def cancel_to_menu(call: CallbackQuery):
-    await call.answer(cache_time=1)
+    await call.answer()
     config = call.bot.get('config')
     if call.from_user.id in config.tg_bot.admin_ids:
         await call.message.edit_text("Главное меню📀\n\n"

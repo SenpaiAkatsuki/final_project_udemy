@@ -16,7 +16,6 @@ from tgbot.handlers.error.error_handler import register_error_handler
 from tgbot.handlers.inline_registration import RegistrationInline_handler
 from tgbot.handlers.main_menu.feedback import register_feedback_handler
 from tgbot.handlers.main_menu.purchase_handler import purchase_handler
-from tgbot.handlers.main_menu.purchase_mono import register_mono_handler
 from tgbot.handlers.main_menu.referral_menu import register_referral
 from tgbot.handlers.user_registration import register_user
 from tgbot.integrations.telegraph import TelegraphService
@@ -48,7 +47,6 @@ def register_all_handlers(dp):
     register_announcement_handler(dp)
 
     purchase_handler(dp)
-    register_mono_handler(dp)
 
     register_admin(dp)
     register_user(dp)
