@@ -9,7 +9,7 @@ from monobank import TooManyRequests
 
 from tgbot.keyboards.main_menu_inline import main_menu_keyboard, admin_menu_keyboard
 from tgbot.keyboards.purchase_inline import payment_inline, buy_inline, purchase_callback, cancel_purchase_inline, \
-    payment_inline_admin, check_payment_mono
+    payment_inline_admin, check_payment_inline
 from tgbot.misc.rate_limit import rate_limit
 from tgbot.misc.states import AdminMenu, User, Purchase, PurchaseMono
 
@@ -103,7 +103,7 @@ async def get_shipping_address(message: types.Message, state: FSMContext):
 
         await message.bot.edit_message_text(chat_id=message.chat.id,
                                             message_id=message.message_id - 1,
-                                            text=f"Количество товара для покупки✔️", )
+                                            text=f"Количество товара для покупки☑️", )
         await message.answer("Введите адрес доставки📝",
                              reply_markup=cancel_purchase_inline)
 
@@ -177,7 +177,7 @@ async def purchase_payment(message: types.Message, state: FSMContext):
                                           f" поддерживает платежи от 100₴❗️\n"
                                           f"Если ваша сумма оплаты выше 100₴,"
                                           f" то проведите оплату через мобильное приложение❗️",
-                                     reply_markup=check_payment_mono)
+                                     reply_markup=check_payment_inline)
 
                 await PurchaseMono.monoComplete.set()
 

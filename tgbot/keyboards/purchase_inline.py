@@ -78,8 +78,8 @@ buy_inline = InlineKeyboardMarkup(row_width=2,
                                       ]
                                   ])
 
-check_payment_mono = InlineKeyboardMarkup(row_width=1,
-                                          inline_keyboard=[
+check_payment_inline = InlineKeyboardMarkup(row_width=1,
+                                            inline_keyboard=[
                                               [
                                                   InlineKeyboardButton("Проверить оплату💵",
                                                                        callback_data=purchase_callback.new(
