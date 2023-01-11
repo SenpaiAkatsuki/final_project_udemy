@@ -44,3 +44,10 @@ class CreateProduct(StatesGroup):
     step_description = State()
     step_price = State()
     step_photo = State()
+
+
+class Announcement(StatesGroup):
+    getAnnouncementText = State()
+    getAnnouncementPhoto = State()
+    sendAnnouncement = State()
+    redactAnnouncement = State()

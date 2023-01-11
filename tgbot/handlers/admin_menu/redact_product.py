@@ -3,6 +3,7 @@ import re
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 
+from tgbot.integrations.telegraph import FileUploader
 from tgbot.keyboards.admin_inline import admin_panel_buttons
 from tgbot.keyboards.purchase_inline import redact_product_inline, redact_callback, payment_inline_admin
 from tgbot.misc.states import Purchase, RedactProduct, AdminMenu, User
@@ -70,7 +71,7 @@ async def change_product(call: types.CallbackQuery, state: FSMContext):
     await RedactProduct.changeValue.set()
 
 
-async def change_product_value(message: types.Message, state: FSMContext):
+async def change_product_value(message: types.Message, state: FSMContext, file_uploader: FileUploader):
     data = await state.get_data()
     db = message.bot.get('db')
     value_to_redact = data.get('redact_value')
@@ -95,8 +96,8 @@ async def change_product_value(message: types.Message, state: FSMContext):
 
     elif "photo" in value_to_redact:
         if message.photo:
-            photo_id = message.photo[-1].file_id
-            await db.update_product_photo(photo_id,
+            uploaded_photo = await file_uploader.upload_photo(message.photo[-1])
+            await db.update_product_photo(uploaded_photo.link,
                                           product.get('product_id'))
         else:
             await message.answer("Неверный формат❌\n\n"

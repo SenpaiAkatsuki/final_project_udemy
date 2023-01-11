@@ -48,7 +48,7 @@ async def add_product(query: types.InlineQuery):
     except Exception as e:
         logging.info(e)
         logging.info("PRODUCT ERROR")
-        await query.bot.send_message(query.from_user.id, "Похоже с этим товаром что-то не так, попробуйте позже "
+        await query.bot.send_message(query.from_user.id, "Похоже с этим товарами что-то не так, попробуйте позже "
                                                          "или обратитесь в вкладу <b>Обратная связь</b>")
         pass
 
