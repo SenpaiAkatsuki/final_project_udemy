@@ -34,7 +34,6 @@ async def cancel_feedback(call: CallbackQuery):
                                          reply_markup=main_menu_keyboard)
             await User.mainMenu.set()
 
-            await User.mainMenu.set()
     elif "cancel_receive" in callback:
         await call.message.delete_reply_markup()
         await call.message.answer(f"<b>F.A.Q</b>\n\n"
@@ -45,6 +44,8 @@ async def cancel_feedback(call: CallbackQuery):
                                      f"Не нашел ответа на свой вопрос?\n"
                                      f"Используй функцию <b><i>Написать в поддержку</i></b>",
                                      reply_markup=feedback_inline)
+
+        await User.mainMenu.set()
 
 
 def register_feedback_handler(dp: Dispatcher):
