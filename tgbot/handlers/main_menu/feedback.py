@@ -37,13 +37,13 @@ async def cancel_feedback(call: CallbackQuery):
     elif "cancel_receive" in callback:
         await call.message.delete_reply_markup()
         await call.message.answer(f"<b>F.A.Q</b>\n\n"
-                                     f"1. Что означает 💰?\n"
-                                     f"<b>Один 💰 равен 1 UAH</b>\n"
-                                     f"2. --------\n"
-                                     f"3. --------\n\n"
-                                     f"Не нашел ответа на свой вопрос?\n"
-                                     f"Используй функцию <b><i>Написать в поддержку</i></b>",
-                                     reply_markup=feedback_inline)
+                                  f"1. Что означает 💰?\n"
+                                  f"<b>Один 💰 равен 1 UAH</b>\n"
+                                  f"2. --------\n"
+                                  f"3. --------\n\n"
+                                  f"Не нашел ответа на свой вопрос?\n"
+                                  f"Используй функцию <b><i>Написать в поддержку</i></b>",
+                                  reply_markup=feedback_inline)
 
         await User.mainMenu.set()
 
@@ -53,4 +53,4 @@ def register_feedback_handler(dp: Dispatcher):
                                        state=[User.mainMenu, AdminMenu.adminMenu])
     dp.register_callback_query_handler(cancel_feedback, feedback_callback.filter(button=["cancel_feedback",
                                                                                          "cancel_receive"]),
-                                       state=[User.mainMenu, AdminMenu.adminMenu, Feedback.getFeedback])
+                                       state=[User.mainMenu, AdminMenu.adminMenu, Feedback.sendFeedback])

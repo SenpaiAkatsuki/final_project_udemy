@@ -14,8 +14,8 @@ admin_panel_buttons = InlineKeyboardMarkup(row_width=2,
                                                    InlineKeyboardButton(text="Рассылка📢",
                                                                         callback_data="admin:announcement"),
 
-                                                   InlineKeyboardButton(text="Просмотреть товары📕",
-                                                                        switch_inline_query_current_chat="")
+                                                   InlineKeyboardButton(text="Ответ на жалобы💬",
+                                                                        callback_data="admin:feedback_answer")
                                                ],
                                                [
                                                    InlineKeyboardButton(text="Режим пользователя🪄",

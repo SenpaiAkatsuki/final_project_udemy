@@ -16,7 +16,10 @@ class Codecheck(StatesGroup):
 
 class Feedback(StatesGroup):
     confirmFeedback = State()
-    getFeedback = State()
+    addScreenshotFeedback = State()
+    sendFeedback = State()
+    answerFeedback = State()
+    getFeedbackAnswer = State()
 
 
 class PurchaseMono(StatesGroup):

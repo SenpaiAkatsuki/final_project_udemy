@@ -85,7 +85,7 @@ async def accept_announcement(call: types.CallbackQuery, state: FSMContext):
     except Exception as e:
         logging.error(f"Error while sending announcement: {e}")
 
-    await call.message.edit_text("<b>Рассылка завершена✔️</b>", )
+    await call.message.edit_text("<b>Рассылка завершена☑️</b>", )
     await call.message.answer(f"<b>Меню администратора📀</b>\n\n",
                               reply_markup=admin_menu_keyboard)
     await AdminMenu.adminMenu.set()

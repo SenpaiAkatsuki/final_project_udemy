@@ -55,7 +55,7 @@ class Database:
             logging.info("Table already exists")
             pass
 
-    async def create_table(self):
+    async def create_table_products(self):
         try:
             sql = """
             CREATE TABLE Products (
@@ -69,6 +69,23 @@ class Database:
             """
             await self.execute(sql, execute=True)
             logging.info("TABLE Products CREATED")
+        except DuplicateTableError:
+            logging.info("Table already exists")
+            pass
+
+    async def create_table_reports(self):
+        try:
+            sql = """
+            CREATE TABLE Reports (
+            id SERIAL PRIMARY KEY,
+            user_id INT NOT NULL,
+            report VARCHAR(1000) NOT NULL,
+            screenshot VARCHAR(255),
+            date DATE NULL DEFAULT (CURRENT_DATE)
+            );
+            """
+            await self.execute(sql, execute=True)
+            logging.info("TABLE Reports CREATED")
         except DuplicateTableError:
             logging.info("Table already exists")
             pass
@@ -173,6 +190,28 @@ class Database:
     async def count_users(self):
         sql = "SELECT COUNT(*) FROM Users"
         return await self.execute(sql, fetchval=True)
+
+    # ========================================= SQL commands for reports =========================================
+    async def select_report(self, **kwargs):
+        sql = "SELECT * FROM reports WHERE "
+        sql, parameters = self.format_args(sql, parameters=kwargs)
+        return await self.execute(sql, *parameters, fetchrow=True)
+
+    async def select_all_reports(self):
+        sql = "SELECT * FROM reports ORDER BY date"
+        return await self.execute(sql, fetch=True)
+
+    async def delete_report(self, user_id):
+        sql = "DELETE FROM reports WHERE user_id=$1"
+        return await self.execute(sql, user_id, execute=True)
+
+    async def add_report(self, user_id, report, screenshot=None):
+        if screenshot:
+            sql = "INSERT INTO reports (user_id, report, screenshot) VALUES ($1, $2, $3)"
+            return await self.execute(sql, user_id, report, screenshot, execute=True)
+        else:
+            sql = "INSERT INTO reports (user_id, report) VALUES ($1, $2)"
+            return await self.execute(sql, user_id, report, execute=True)
 
     async def close(self) -> None:
         if self.pool is None:

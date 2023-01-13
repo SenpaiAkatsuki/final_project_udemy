@@ -26,7 +26,7 @@ confirm_feedback_inline = InlineKeyboardMarkup(row_width=2,
                                                                                 button="send_feedback"
                                                                             )),
 
-                                                       InlineKeyboardButton("Отмена❌",
+                                                       InlineKeyboardButton("Отменить❌",
                                                                             callback_data="feedback:cancel_receive")
                                                    ]
                                                ])
@@ -34,7 +34,23 @@ confirm_feedback_inline = InlineKeyboardMarkup(row_width=2,
 answer_feedback_inline = InlineKeyboardMarkup(row_width=2,
                                               inline_keyboard=[
                                                   [
-                                                      InlineKeyboardButton("Ответить на вопрос☑️",
+                                                      InlineKeyboardButton("Ответить на заявку☑️",
                                                                            callback_data="feedback:answer_feedback")
+                                                  ],
+                                                  [
+                                                      InlineKeyboardButton("Отклонить заявку❌",
+                                                                           callback_data="feedback:decline_feedback")
                                                   ]
                                               ])
+
+get_next_feedback_inline = InlineKeyboardMarkup(row_width=1,
+                                                inline_keyboard=[
+                                                    [
+                                                        InlineKeyboardButton("Следующая заявка➡️",
+                                                                             callback_data="feedback:get_next_feedback")
+                                                    ],
+                                                    [
+                                                        InlineKeyboardButton("Назад в меню🔚",
+                                                                             callback_data="feedback:cancel_feedback")
+                                                    ]
+                                                ])

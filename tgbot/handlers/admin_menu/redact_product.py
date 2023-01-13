@@ -4,9 +4,8 @@ from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 
 from tgbot.integrations.telegraph import FileUploader
-from tgbot.keyboards.admin_inline import admin_panel_buttons
 from tgbot.keyboards.purchase_inline import redact_product_inline, redact_callback, payment_inline_admin
-from tgbot.misc.states import Purchase, RedactProduct, AdminMenu, User
+from tgbot.misc.states import Purchase, RedactProduct, User
 
 
 async def redact_menu(call: types.CallbackQuery, state: FSMContext):

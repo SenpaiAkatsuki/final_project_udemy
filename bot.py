@@ -9,6 +9,7 @@ from tgbot.filters.admin import AdminFilter
 from tgbot.handlers.admin_menu.add_product_inline import product_inline_query
 from tgbot.handlers.admin_menu.admin_registration import register_admin
 from tgbot.handlers.admin_menu.announcement_handler import register_announcement_handler
+from tgbot.handlers.admin_menu.feedback_answer import register_feedback_answer_handler
 from tgbot.handlers.admin_menu.feedback_receive import register_feedback_receive_handler
 from tgbot.handlers.admin_menu.generate_product import register_inlineMode_handler_admin
 from tgbot.handlers.admin_menu.redact_product import redact_product_handlers
@@ -42,8 +43,11 @@ def register_all_handlers(dp):
     register_inlineMode_handler_admin(dp)
 
     register_referral(dp)
+
     register_feedback_handler(dp)
     register_feedback_receive_handler(dp)
+    register_feedback_answer_handler(dp)
+
     register_announcement_handler(dp)
 
     purchase_handler(dp)
@@ -93,7 +97,8 @@ async def main():
                                password=config.db.password,
                                database=config.db.database)
     await db.create_table_users()
-    await db.create_table()
+    await db.create_table_products()
+    await db.create_table_reports()
 
     try:
         await dp.start_polling()
