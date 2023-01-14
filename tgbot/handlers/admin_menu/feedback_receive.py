@@ -28,9 +28,9 @@ async def confirm_feedback_report(message: types.Message, state: FSMContext):
     dp = message.bot.get('dp')
 
     if message.text or message.photo:
-        await message.answer("Отправить сообщение в поддержку?")
         if message.photo:
             if len(message.caption) <= 1000:
+                await message.answer("Отправить сообщение в поддержку?")
                 await state.update_data(
                     feedback=message.caption,
                     screenshot=message.photo[-1].file_id
@@ -45,6 +45,7 @@ async def confirm_feedback_report(message: types.Message, state: FSMContext):
                 await Feedback.confirmFeedback.set()
         else:
             if len(message.text) <= 1000:
+                await message.answer("Отправить сообщение в поддержку?")
                 await state.update_data(
                     feedback=message.text,
                 )

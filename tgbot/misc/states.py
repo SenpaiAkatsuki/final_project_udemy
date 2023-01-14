@@ -20,6 +20,7 @@ class Feedback(StatesGroup):
     sendFeedback = State()
     answerFeedback = State()
     getFeedbackAnswer = State()
+    confirmFeedbackAnswer = State()
 
 
 class PurchaseMono(StatesGroup):

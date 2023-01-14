@@ -25,9 +25,6 @@ async def cancel_redact(call: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     selected = await db.select_product(product_id=data['product_to_redact'])
 
-    # await call.bot.delete_message(chat_id=call.from_user.id,
-    #                               message_id=call.message.message_id - 1)
-
     await call.message.delete_reply_markup()
     await call.message.answer_photo(photo=selected.get('photo'),
                                     caption=f"Товар: <b>{selected.get('name')}</b>\n\n"

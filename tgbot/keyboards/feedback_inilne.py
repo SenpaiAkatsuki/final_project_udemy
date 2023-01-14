@@ -43,6 +43,20 @@ answer_feedback_inline = InlineKeyboardMarkup(row_width=2,
                                                   ]
                                               ])
 
+confirm_feedback_answer_inline = InlineKeyboardMarkup(row_width=2,
+                                                      inline_keyboard=[
+                                                          [
+                                                                InlineKeyboardButton("Отправить☑️",
+                                                                                     callback_data=
+                                                                                     "feedback:send_feedback_answer")
+                                                          ],
+                                                          [
+                                                                InlineKeyboardButton("Редактировать🖍",
+                                                                                     callback_data=
+                                                                                     "feedback:edit_feedback_answer")
+                                                          ]
+                                                      ])
+
 get_next_feedback_inline = InlineKeyboardMarkup(row_width=1,
                                                 inline_keyboard=[
                                                     [
