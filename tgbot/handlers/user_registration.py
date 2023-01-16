@@ -120,7 +120,7 @@ async def check_invite(call: types.CallbackQuery):
     await call.answer(cache_time=2)
     await call.message.edit_text("Пришлите код приглашение🔢",
                                  reply_markup=cancel_keyboard)
-    await Codecheck.Q1.set()
+    await Codecheck.codeCheck.set()
 
 
 async def check_invite_code_approve(message: Message):
@@ -141,7 +141,7 @@ async def check_invite_code_approve(message: Message):
         await message.reply("Неверный код❌\n"
                             "Проверьте правильно ли вы указали все цифры <b>(без пробелов и символов)</b>")
 
-        await Codecheck.Q1.set()
+        await Codecheck.codeCheck.set()
 
 
 async def cancel_menu(call: CallbackQuery):
@@ -157,7 +157,7 @@ async def cancel_menu(call: CallbackQuery):
 
 def register_user(dp: Dispatcher):
     dp.register_message_handler(user_start, commands=["start"], state="*")
-    dp.register_message_handler(check_invite_code_approve, state=Codecheck.Q1)
+    dp.register_message_handler(check_invite_code_approve, state=Codecheck.codeCheck)
     dp.register_callback_query_handler(check_subscription_to_chanel,
                                        user_callback.filter(type="member_check"),
                                        state=User.untilApproved)

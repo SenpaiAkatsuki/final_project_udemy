@@ -179,7 +179,7 @@ async def purchase_payment(message: types.Message, state: FSMContext):
                                           f" то проведите оплату через мобильное приложение❗️",
                                      reply_markup=check_payment_inline)
 
-                await PurchaseMono.monoComplete.set()
+                await PurchaseMono.monoPaymentCheck.set()
 
             else:
                 await message.bot.edit_message_reply_markup(chat_id=message.chat.id,
@@ -239,12 +239,12 @@ async def check_payment_mono(call: types.CallbackQuery, state: FSMContext):
                                           f"Если есть вопросы используйте вкладку <b>помощь</b>\n"
                                           f"<i>Главное меню -> Обратная связь</i>")
 
-                await PurchaseMono.monoComplete.set()
+                await PurchaseMono.monoPaymentCheck.set()
         else:
             await call.message.answer("Платеж не найден❔ "
                                       "Возможно стоит подождать, иногда это занимает пару минут")
 
-            await PurchaseMono.monoComplete.set()
+            await PurchaseMono.monoPaymentCheck.set()
 
     except TooManyRequests:
         await call.message.answer("Слишком много запросов, пожалуйста подождите❕")
@@ -262,8 +262,7 @@ def purchase_handler(dp: Dispatcher):
                                        purchase_callback.filter(button='cancel'),
                                        state=[Purchase.selectedProduct,
                                               Purchase.selectQuantity,
-                                              PurchaseMono.checkPayment,
-                                              PurchaseMono.monoComplete,
+                                              PurchaseMono.monoPaymentCheck,
                                               Purchase.selectAddress])
     dp.register_message_handler(deeplink_purchase,
                                 commands="start",
@@ -282,4 +281,4 @@ def purchase_handler(dp: Dispatcher):
                                 content_types=types.ContentTypes.ANY)
     dp.register_callback_query_handler(check_payment_mono,
                                        purchase_callback.filter(button="check_payment_mono"),
-                                       state=[PurchaseMono.monoComplete])
+                                       state=[PurchaseMono.monoPaymentCheck])

@@ -1,6 +1,4 @@
 from dataclasses import dataclass
-from itertools import product
-from tgbot.misc.db_api.postgres_db import Database as db
 
 from environs import Env
 

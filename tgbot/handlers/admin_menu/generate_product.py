@@ -20,7 +20,7 @@ async def start_create_product(call: CallbackQuery):
 
     await call.message.delete_reply_markup()
 
-    await CreateProduct.start_creation.set()
+    await CreateProduct.getProductTag.set()
 
 
 async def catch_id(message: types.Message, state: FSMContext):
@@ -54,7 +54,7 @@ async def catch_id(message: types.Message, state: FSMContext):
             await message.answer("🖍Введите <b>титульное имя</b> товара\n",
                                  reply_markup=product_creation_cancel)
 
-            await CreateProduct.step_id.set()
+            await CreateProduct.getProductTitle.set()
 
     else:
         await message.answer("Неверный формат❌\n\n"
@@ -65,7 +65,7 @@ async def catch_id(message: types.Message, state: FSMContext):
         await message.bot.edit_message_reply_markup(chat_id=message.from_user.id,
                                                     message_id=message.message_id - 1,
                                                     reply_markup=None)
-        await CreateProduct.start_creation.set()
+        await CreateProduct.getProductTag.set()
 
 
 async def catch_name(message: types.Message, state: FSMContext):
@@ -87,7 +87,7 @@ async def catch_name(message: types.Message, state: FSMContext):
             await message.answer("🖍Введите <b>описание</b> товара",
                                  reply_markup=product_creation_cancel)
 
-            await CreateProduct.step_name.set()
+            await CreateProduct.getProductDescription.set()
         else:
             await message.answer("Неверный формат❌\n\n"
                                  "Пришлите титульное имя еще раз",
@@ -97,7 +97,7 @@ async def catch_name(message: types.Message, state: FSMContext):
                                                         message_id=message.message_id - 1,
                                                         reply_markup=None)
 
-            await CreateProduct.step_id.set()
+            await CreateProduct.getProductTitle.set()
     else:
         await message.answer("Неверный формат❌\n\n"
                              "<b>Пришлите имя товара до 255 символов</b>",
@@ -107,7 +107,7 @@ async def catch_name(message: types.Message, state: FSMContext):
                                                     message_id=message.message_id - 1,
                                                     reply_markup=None)
 
-        await CreateProduct.step_id.set()
+        await CreateProduct.getProductTitle.set()
 
 
 async def catch_description(message: types.Message, state: FSMContext):
@@ -128,7 +128,7 @@ async def catch_description(message: types.Message, state: FSMContext):
         await message.answer("🖍Введите <b>цену</b> для товара",
                              reply_markup=product_creation_cancel)
 
-        await CreateProduct.step_description.set()
+        await CreateProduct.getProductPrice.set()
     else:
         await message.answer("Неверный формат❌\n\n"
                              "<b>Пришлите описание до 255 символов</b>",
@@ -138,7 +138,7 @@ async def catch_description(message: types.Message, state: FSMContext):
                                                     message_id=message.message_id - 1,
                                                     reply_markup=None)
 
-        await CreateProduct.step_name.set()
+        await CreateProduct.getProductDescription.set()
 
 
 async def catch_price(message: types.Message, state: FSMContext):
@@ -159,7 +159,7 @@ async def catch_price(message: types.Message, state: FSMContext):
         await message.answer("📷Пришлите фото товара",
                              reply_markup=product_creation_cancel)
 
-        await CreateProduct.step_price.set()
+        await CreateProduct.getProductPhoto.set()
 
     else:
         await message.answer("Некорректная цена❌\n\n"
@@ -170,7 +170,7 @@ async def catch_price(message: types.Message, state: FSMContext):
                                                     message_id=message.message_id - 1,
                                                     reply_markup=None)
 
-        await CreateProduct.step_description.set()
+        await CreateProduct.getProductPrice.set()
 
 
 async def end_creation_product(message: types.Message, file_uploader: FileUploader, state: FSMContext):
@@ -213,7 +213,7 @@ async def end_creation_product(message: types.Message, file_uploader: FileUpload
         await message.bot.edit_message_reply_markup(chat_id=message.from_user.id,
                                                     message_id=message.message_id - 1,
                                                     reply_markup=None)
-        await CreateProduct.step_price.set()
+        await CreateProduct.getProductPhoto.set()
 
 
 async def cancel_product_creation(call: CallbackQuery):
@@ -231,14 +231,14 @@ def register_inlineMode_handler_admin(dp: Dispatcher):
     dp.register_callback_query_handler(start_create_product, admin_panel_callback.filter(button="add_product"),
                                        state=AdminMenu.adminMenu)
 
-    dp.register_message_handler(catch_id, state=CreateProduct.start_creation,
+    dp.register_message_handler(catch_id, state=CreateProduct.getProductTag,
                                 content_types=types.ContentTypes.ANY)
-    dp.register_message_handler(catch_name, state=CreateProduct.step_id,
+    dp.register_message_handler(catch_name, state=CreateProduct.getProductTitle,
                                 content_types=types.ContentTypes.ANY)
-    dp.register_message_handler(catch_description, state=CreateProduct.step_name,
+    dp.register_message_handler(catch_description, state=CreateProduct.getProductDescription,
                                 content_types=types.ContentTypes.ANY)
-    dp.register_message_handler(catch_price, state=CreateProduct.step_description,
+    dp.register_message_handler(catch_price, state=CreateProduct.getProductPrice,
                                 content_types=types.ContentTypes.ANY)
     dp.register_message_handler(end_creation_product,
-                                state=CreateProduct.step_price,
+                                state=CreateProduct.getProductPhoto,
                                 content_types=types.ContentTypes.ANY)

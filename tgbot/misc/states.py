@@ -11,7 +11,7 @@ class AdminMenu(StatesGroup):
 
 
 class Codecheck(StatesGroup):
-    Q1 = State()
+    codeCheck = State()
 
 
 class Feedback(StatesGroup):
@@ -24,16 +24,13 @@ class Feedback(StatesGroup):
 
 
 class PurchaseMono(StatesGroup):
-    checkPayment = State()
-    selectAddressMono = State()
-    monoComplete = State()
+    monoPaymentCheck = State()
 
 
 class Purchase(StatesGroup):
     selectedProduct = State()
     selectQuantity = State()
     selectAddress = State()
-    purchaseProduct = State()
 
 
 class RedactProduct(StatesGroup):
@@ -42,12 +39,11 @@ class RedactProduct(StatesGroup):
 
 
 class CreateProduct(StatesGroup):
-    start_creation = State()
-    step_id = State()
-    step_name = State()
-    step_description = State()
-    step_price = State()
-    step_photo = State()
+    getProductTag = State()
+    getProductTitle = State()
+    getProductDescription = State()
+    getProductPrice = State()
+    getProductPhoto = State()
 
 
 class Announcement(StatesGroup):
