@@ -14,6 +14,12 @@ class DbConfig:
 
 
 @dataclass
+class RedisStorage:
+    host: str
+    port: str
+
+
+@dataclass
 class TgBot:
     token: str
     admin_ids: list[int]
@@ -47,6 +53,7 @@ class Config:
     misc: Miscellaneous
     channel: Channel
     product: Products
+    redis: RedisStorage
 
 
 def load_config(path: str = None):
@@ -65,6 +72,10 @@ def load_config(path: str = None):
             password=env.str('PG_PASSWORD'),
             user=env.str('PG_USER'),
             database=env.str('PG_NAME')
+        ),
+        redis=RedisStorage(
+            host=env.str('REDIS_HOST'),
+            port=env.str('REDIS_PORT')
         ),
         misc=Miscellaneous(
             allowed_users=[],

@@ -3,6 +3,7 @@ import logging
 
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.contrib.fsm_storage.redis import RedisStorage2
 
 from tgbot.config import load_config
 from tgbot.filters.admin import AdminFilter
@@ -74,7 +75,10 @@ async def main():
     logger.info("Starting bot")
     config = load_config(".env")
 
-    storage = MemoryStorage()
+    storage = RedisStorage2(
+        host=config.redis.host,
+        port=config.redis.port,
+    ) if config.tg_bot.use_redis else MemoryStorage()
     bot = Bot(token=config.tg_bot.token, parse_mode='HTML')
     file_uploader = TelegraphService()
     dp = Dispatcher(bot, storage=storage)

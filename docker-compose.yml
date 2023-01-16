@@ -32,7 +32,16 @@ services:
         env_file:
           - ".env"
         networks:
-        - tg_bot
+        - tg_bot\
+
+    redis:
+      image: redis
+      volumes:
+        - ./data:/data
+      ports:
+        - 6379:6379
+      env_file:
+        - ".env"
 
     adminer:
             image: adminer
